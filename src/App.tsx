@@ -17,6 +17,8 @@ import { LeadsManagerView } from './components/LeadsManagerView';
 import { BusinessDetailModal } from './components/BusinessDetailModal';
 import { ExportReportsModal } from './components/ExportReportsModal';
 import { DiscoverModal } from './components/DiscoverModal';
+import { WordPressSetupModal } from './components/WordPressSetupModal';
+import { Footer } from './components/Footer';
 import { INITIAL_GHANA_BUSINESSES } from './data/mockBusinessesGhana';
 import { BusinessRecord, GhanaRegion, BusinessCategory } from './types';
 
@@ -30,6 +32,7 @@ export default function App() {
   const [selectedBusiness, setSelectedBusiness] = useState<BusinessRecord | null>(null);
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const [isDiscoverModalOpen, setIsDiscoverModalOpen] = useState<boolean>(false);
+  const [isWPSetupModalOpen, setIsWPSetupModalOpen] = useState<boolean>(false);
 
   // Fetch businesses from backend API
   const fetchBusinesses = async () => {
@@ -59,78 +62,84 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 font-sans antialiased selection:bg-indigo-500 selection:text-white">
-      {/* Navigation Header */}
-      <Navbar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        selectedRegion={selectedRegion}
-        setSelectedRegion={setSelectedRegion}
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        onOpenDiscoverModal={() => setIsDiscoverModalOpen(true)}
-        onOpenExportModal={() => setIsExportModalOpen(true)}
-        totalBusinesses={businesses.length}
-      />
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 font-sans antialiased selection:bg-emerald-500 selection:text-white flex flex-col justify-between">
+      <div>
+        {/* Navigation Header */}
+        <Navbar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          selectedRegion={selectedRegion}
+          setSelectedRegion={setSelectedRegion}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          onOpenDiscoverModal={() => setIsDiscoverModalOpen(true)}
+          onOpenExportModal={() => setIsExportModalOpen(true)}
+          onOpenWPSetupModal={() => setIsWPSetupModalOpen(true)}
+          totalBusinesses={businesses.length}
+        />
 
-      {/* Main Container Viewport */}
-      <main className="max-w-7xl mx-auto px-4 pt-6">
-        {activeTab === 'public_landing' && (
-          <PublicLandingPage
-            sampleBusinesses={businesses}
-            onOpenAdminDashboard={() => setActiveTab('dashboard')}
-          />
-        )}
+        {/* Main Container Viewport */}
+        <main className="max-w-7xl mx-auto px-4 pt-6">
+          {activeTab === 'public_landing' && (
+            <PublicLandingPage
+              sampleBusinesses={businesses}
+              onOpenAdminDashboard={() => setActiveTab('dashboard')}
+            />
+          )}
 
-        {activeTab === 'dashboard' && (
-          <ExecutiveDashboard
-            businesses={businesses}
-            onNavigateTab={setActiveTab}
-            onSelectBusiness={(biz) => setSelectedBusiness(biz)}
-          />
-        )}
+          {activeTab === 'dashboard' && (
+            <ExecutiveDashboard
+              businesses={businesses}
+              onNavigateTab={setActiveTab}
+              onSelectBusiness={(biz) => setSelectedBusiness(biz)}
+            />
+          )}
 
-        {activeTab === 'gis_map' && (
-          <InteractiveGISMap
-            businesses={businesses}
-            onSelectBusiness={(biz) => setSelectedBusiness(biz)}
-            selectedRegionFilter={selectedRegion}
-            onSelectRegionFilter={setSelectedRegion}
-          />
-        )}
+          {activeTab === 'gis_map' && (
+            <InteractiveGISMap
+              businesses={businesses}
+              onSelectBusiness={(biz) => setSelectedBusiness(biz)}
+              selectedRegionFilter={selectedRegion}
+              onSelectRegionFilter={setSelectedRegion}
+            />
+          )}
 
-        {activeTab === 'explorer' && (
-          <BusinessExplorer
-            businesses={businesses}
-            onSelectBusiness={(biz) => setSelectedBusiness(biz)}
-            selectedRegion={selectedRegion}
-            setSelectedRegion={setSelectedRegion}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            onRunAgentForBusiness={handleRunAgentForBusiness}
-          />
-        )}
+          {activeTab === 'explorer' && (
+            <BusinessExplorer
+              businesses={businesses}
+              onSelectBusiness={(biz) => setSelectedBusiness(biz)}
+              selectedRegion={selectedRegion}
+              setSelectedRegion={setSelectedRegion}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              onRunAgentForBusiness={handleRunAgentForBusiness}
+            />
+          )}
 
-        {activeTab === 'founder_mode' && (
-          <AIFounderMode
-            businesses={businesses}
-            onSelectBusiness={(biz) => setSelectedBusiness(biz)}
-            onRunAgent={handleRunAgentForBusiness}
-          />
-        )}
+          {activeTab === 'founder_mode' && (
+            <AIFounderMode
+              businesses={businesses}
+              onSelectBusiness={(biz) => setSelectedBusiness(biz)}
+              onRunAgent={handleRunAgentForBusiness}
+            />
+          )}
 
-        {activeTab === 'microsaas' && <MicroSaaSStudio />}
+          {activeTab === 'microsaas' && <MicroSaaSStudio />}
 
-        {activeTab === 'agents' && <AgentsOrchestratorView businesses={businesses} />}
+          {activeTab === 'agents' && <AgentsOrchestratorView businesses={businesses} />}
 
-        {activeTab === 'analytics' && <MarketGapsAnalytics />}
+          {activeTab === 'analytics' && <MarketGapsAnalytics />}
 
-        {activeTab === 'leads' && <LeadsManagerView />}
-      </main>
+          {activeTab === 'leads' && <LeadsManagerView />}
+        </main>
+      </div>
+
+      {/* Global Footer */}
+      <Footer onNavigateTab={setActiveTab} />
 
       {/* Modals */}
       <BusinessDetailModal
@@ -149,6 +158,11 @@ export default function App() {
         isOpen={isDiscoverModalOpen}
         onClose={() => setIsDiscoverModalOpen(false)}
         onBusinessDiscovered={fetchBusinesses}
+      />
+
+      <WordPressSetupModal
+        isOpen={isWPSetupModalOpen}
+        onClose={() => setIsWPSetupModalOpen(false)}
       />
     </div>
   );

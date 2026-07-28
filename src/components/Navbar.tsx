@@ -27,6 +27,7 @@ interface NavbarProps {
   setSearchQuery: (q: string) => void;
   onOpenDiscoverModal: () => void;
   onOpenExportModal: () => void;
+  onOpenWPSetupModal: () => void;
   totalBusinesses: number;
 }
 
@@ -41,39 +42,68 @@ export const Navbar: React.FC<NavbarProps> = ({
   setSearchQuery,
   onOpenDiscoverModal,
   onOpenExportModal,
+  onOpenWPSetupModal,
   totalBusinesses,
 }) => {
+  const isPublicMode = activeTab === 'public_landing';
+
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-slate-200 text-slate-800 shadow-sm">
-      {/* Top Banner / System Status */}
-      <div className="bg-emerald-50/80 px-4 py-1.5 border-b border-emerald-200/80 text-xs flex flex-wrap items-center justify-between gap-2">
+      {/* Top Banner / Mode Indicator */}
+      <div className={`px-4 py-1.5 border-b text-xs flex flex-wrap items-center justify-between gap-2 transition-colors ${
+        isPublicMode 
+          ? 'bg-emerald-50/90 border-emerald-200/80' 
+          : 'bg-slate-900 border-slate-800 text-slate-200'
+      }`}>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 font-bold text-emerald-800">
+          <div className="flex items-center gap-1.5 font-black tracking-wide">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            mkt.gabochie.com
+            {isPublicMode ? (
+              <span className="text-emerald-900 font-extrabold">mkt.gabochie.com • PUBLIC MEMBERSHIP SAAS</span>
+            ) : (
+              <span className="text-emerald-400 font-extrabold">🔒 BI ADMIN CONSOLE • mkt.gabochie.com</span>
+            )}
           </div>
-          <span className="text-emerald-300">|</span>
-          <span className="text-emerald-700 font-medium hidden sm:inline">
-            Gabochie Marketing GIS & Maps BI SaaS Platform 🇬🇭
+          <span className="opacity-30">|</span>
+          <span className={`font-medium hidden sm:inline ${isPublicMode ? 'text-emerald-800' : 'text-slate-300'}`}>
+            Ghana Maps GIS Intelligence & Membership Platform
           </span>
         </div>
-        <div className="flex items-center gap-4 text-emerald-700 font-medium">
-          <div className="flex items-center gap-1.5">
-            <Building2 className="w-3.5 h-3.5 text-emerald-600" />
-            <span className="font-bold text-slate-800">{totalBusinesses}</span> Businesses Tracked
-          </div>
-          <span className="text-emerald-300">|</span>
-          <div className="flex items-center gap-1 text-emerald-800 font-semibold">
-            <Bot className="w-3.5 h-3.5 text-emerald-600" />
-            18 AI Agents Active
-          </div>
+
+        <div className="flex items-center gap-3 font-medium text-[11px]">
+          <button
+            onClick={onOpenWPSetupModal}
+            className={`px-2.5 py-1 rounded-lg border font-bold flex items-center gap-1.5 transition-all ${
+              isPublicMode
+                ? 'bg-white text-emerald-800 border-emerald-300 hover:bg-emerald-100'
+                : 'bg-slate-800 text-emerald-300 border-slate-700 hover:bg-slate-700'
+            }`}
+          >
+            <span>🔌 LocalWP / WP Integration Guide</span>
+          </button>
+
+          {isPublicMode ? (
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold px-3 py-1 rounded-lg transition-all shadow-xs"
+            >
+              🔒 Staff Login / BI Console
+            </button>
+          ) : (
+            <button
+              onClick={() => setActiveTab('public_landing')}
+              className="bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 font-extrabold px-3 py-1 rounded-lg transition-all"
+            >
+              🌐 View Public Website
+            </button>
+          )}
         </div>
       </div>
 
       {/* Main Header Row */}
       <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
         {/* Brand & Logo */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('public_landing')}>
           <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 rounded-xl flex items-center justify-center text-white font-black shadow-md shadow-emerald-200/60 relative group">
             <MapPin className="w-6 h-6 text-white drop-shadow-sm group-hover:scale-110 transition-transform" />
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 rounded-full border-2 border-white"></span>
@@ -103,7 +133,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search Ghanaian businesses, cities (Accra, Kumasi...), categories..."
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-600 focus:ring-1 focus:ring-indigo-500 transition-all shadow-2xs"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 transition-all shadow-2xs font-medium"
             />
           </div>
 
@@ -112,7 +142,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <select
               value={selectedRegion}
               onChange={(e) => setSelectedRegion(e.target.value as GhanaRegion | 'ALL')}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:border-indigo-600 cursor-pointer font-medium"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:border-emerald-600 cursor-pointer font-medium"
             >
               <option value="ALL">📍 All 16 Regions</option>
               {GHANA_REGIONS_DATA.map((r) => (
@@ -134,20 +164,24 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Navigation Tabs */}
+      {/* Navigation Bar: Differentiated for Public vs Admin */}
       <div className="bg-white border-t border-slate-200 px-4 overflow-x-auto no-scrollbar">
         <div className="max-w-7xl mx-auto flex items-center gap-1 py-1.5 text-xs">
+          {/* Public Landing Button */}
           <button
             onClick={() => setActiveTab('public_landing')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-bold transition-all ${
               activeTab === 'public_landing'
-                ? 'bg-emerald-600 text-white shadow-sm'
+                ? 'bg-emerald-600 text-white shadow-sm font-black'
                 : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200'
             }`}
           >
             <Globe className="w-4 h-4" />
-            <span>Public Landing Page</span>
+            <span>Public Membership Site</span>
           </button>
+
+          {/* BI Admin Navigation Tabs */}
+          <div className="h-4 w-px bg-slate-200 mx-1 hidden sm:block" />
 
           <button
             onClick={() => setActiveTab('dashboard')}
