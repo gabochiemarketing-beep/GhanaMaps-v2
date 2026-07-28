@@ -8,9 +8,34 @@ interface WordPressSetupModalProps {
 
 export const WordPressSetupModal: React.FC<WordPressSetupModalProps> = ({ isOpen, onClose }) => {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState<'iframe' | 'plugin' | 'localwp'>('localwp');
+  const [activeTab, setActiveTab] = useState<'iframe' | 'plugin' | 'localwp' | 'theme'>('theme');
 
   if (!isOpen) return null;
+
+  const customThemeIndexPhp = `<?php
+/**
+ * Theme Name: Gabochie GIS Theme
+ * Description: 100% Full-Viewport Theme for Ghana Maps BI Platform.
+ * Version: 1.0.0
+ */
+?>
+<!DOCTYPE html>
+<html <?php language_attributes(); ?>>
+<head>
+    <meta charset="<?php bloginfo('charset'); ?>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php wp_title('|', true, 'right'); ?><?php bloginfo('name'); ?></title>
+    <style>
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #0f172a; }
+        .gis-frame { width: 100vw; height: 100vh; border: none; display: block; }
+    </style>
+    <?php wp_head(); ?>
+</head>
+<body <?php body_class(); ?>>
+    <iframe src="http://localhost:3000" class="gis-frame" allow="geolocation; camera; microphone"></iframe>
+    <?php wp_footer(); ?>
+</body>
+</html>`;
 
   const handleCopy = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
@@ -92,38 +117,77 @@ function gabochie_mkt_admin_page_render() {
         </div>
 
         {/* Mode Selector Tabs */}
-        <div className="flex border-b border-slate-200 gap-2">
+        <div className="flex border-b border-slate-200 gap-1 overflow-x-auto">
+          <button
+            onClick={() => setActiveTab('theme')}
+            className={`pb-3 text-xs font-bold transition-all border-b-2 px-3 whitespace-nowrap ${
+              activeTab === 'theme'
+                ? 'border-emerald-600 text-emerald-700 font-black'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            ⭐ Custom Theme (Full Page)
+          </button>
           <button
             onClick={() => setActiveTab('localwp')}
-            className={`pb-3 text-xs font-bold transition-all border-b-2 px-3 ${
+            className={`pb-3 text-xs font-bold transition-all border-b-2 px-3 whitespace-nowrap ${
               activeTab === 'localwp'
                 ? 'border-emerald-600 text-emerald-700 font-black'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            1. LocalWP Desktop Setup
+            LocalWP Setup
           </button>
           <button
             onClick={() => setActiveTab('plugin')}
-            className={`pb-3 text-xs font-bold transition-all border-b-2 px-3 ${
+            className={`pb-3 text-xs font-bold transition-all border-b-2 px-3 whitespace-nowrap ${
               activeTab === 'plugin'
                 ? 'border-emerald-600 text-emerald-700 font-black'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            2. WP Plugin Route (Separation)
-          </button>
-          <button
-            onClick={() => setActiveTab('iframe')}
-            className={`pb-3 text-xs font-bold transition-all border-b-2 px-3 ${
-              activeTab === 'iframe'
-                ? 'border-emerald-600 text-emerald-700 font-black'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            3. Frontend Shortcode & iFrame
+            WP Admin Sidebar Plugin
           </button>
         </div>
+
+        {/* Tab 0: Custom Theme */}
+        {activeTab === 'theme' && (
+          <div className="space-y-4 text-xs text-slate-700">
+            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 space-y-2">
+              <h4 className="font-bold text-emerald-900 flex items-center gap-2 text-sm">
+                <Globe className="w-4 h-4 text-emerald-700" />
+                Why a Custom Theme is the Best Solution
+              </h4>
+              <p className="text-emerald-850 font-medium">
+                Standard themes like Twenty Twenty-Five force 650px text margins and headers around shortcodes. Creating a dedicated 1-file custom theme makes your platform fill <strong>100% of the screen (edge-to-edge)</strong> with zero header/footer clutter!
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <p className="font-bold text-slate-800">
+                1. Create Folder: <code className="bg-slate-100 px-1.5 py-0.5 rounded border text-slate-800 font-mono">C:\Users\user\Local Sites\gabochiemkt\app\public\wp-content\themes\gabochie-theme\</code>
+              </p>
+              <p className="font-bold text-slate-800">
+                2. Create file <code className="bg-slate-100 px-1.5 py-0.5 rounded border text-slate-800 font-mono">index.php</code> inside that folder with this exact code:
+              </p>
+            </div>
+
+            <div className="relative bg-slate-900 text-emerald-300 font-mono p-4 rounded-2xl overflow-x-auto text-[11px] leading-relaxed border border-slate-800">
+              <button
+                onClick={() => handleCopy(customThemeIndexPhp, 3)}
+                className="absolute top-3 right-3 bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1 rounded-lg text-[10px] font-sans flex items-center gap-1 border border-slate-700"
+              >
+                {copiedIndex === 3 ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                <span>{copiedIndex === 3 ? 'Copied!' : 'Copy index.php'}</span>
+              </button>
+              <pre>{customThemeIndexPhp}</pre>
+            </div>
+
+            <p className="font-medium text-slate-600">
+              3. Go to <code className="bg-slate-100 px-1.5 py-0.5 rounded border text-slate-800 font-mono">http://localhost:10022/wp-admin/themes.php</code> and click <strong>Activate</strong> on <strong>Gabochie GIS Theme</strong>!
+            </p>
+          </div>
+        )}
 
         {/* Tab 1: LocalWP Setup */}
         {activeTab === 'localwp' && (
