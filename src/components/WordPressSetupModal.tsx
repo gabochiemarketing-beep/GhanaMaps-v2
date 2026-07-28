@@ -122,20 +122,20 @@ function gabochie_mkt_admin_page_render() {
         {/* Tab 1: LocalWP Setup */}
         {activeTab === 'localwp' && (
           <div className="space-y-4 text-xs text-slate-700">
-            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 space-y-2">
+            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 space-y-3">
               <h4 className="font-bold text-emerald-900 flex items-center gap-2 text-sm">
                 <Globe className="w-4 h-4 text-emerald-700" />
-                LocalWP & GitHub Repository Syncing Guide
+                LocalWP & Twenty Twenty-Five Activation Steps
               </h4>
               <ol className="list-decimal list-inside space-y-2 text-emerald-850 font-medium">
                 <li>
-                  <strong>GitHub Remote Repo:</strong> <code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">https://github.com/gabochiemarketing-beep/GhanaMaps-v2</code>
+                  <strong>Activate Plugin in WP Admin:</strong> Go to <code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">http://localhost:10022/wp-admin/plugins.php</code> and click <strong>Activate</strong> next to <em>"Gabochie MKT GIS & Membership SaaS"</em>. (Without activating, WordPress shows <code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">[gabochie_gis]</code> as plain text).
                 </li>
                 <li>
-                  <strong>LocalWP Plugin Path:</strong> <code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">C:\Users\user\Local Sites\gabochiemkt\app\public\wp-content\plugins\gabochie-gis-bi\</code>
+                  <strong>Twenty Twenty-Five Theme Block Editor:</strong> Go to <code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">http://localhost:10022/wp-admin/site-editor.php</code> or edit your home page. Add a <strong>Shortcode Block</strong> or <strong>Custom HTML Block</strong> and paste <code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">[gabochie_gis]</code>.
                 </li>
                 <li>
-                  <strong>WordPress Frontend Page:</strong> Edit your home page in WP Admin (<code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">http://localhost:10022/wp-admin/</code>) and add the <code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">[gabochie_gis]</code> Shortcode block!
+                  <strong>App Server Active:</strong> Keep <code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">npm run dev</code> running inside <code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">wp-content/plugins/gabochie-gis-bi/</code> so <code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">http://localhost:3000</code> is live.
                 </li>
               </ol>
             </div>
