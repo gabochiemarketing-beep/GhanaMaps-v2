@@ -1,0 +1,6 @@
+{
+  "name": "GhanaMaps BI Platform",
+  "description": "Enterprise Agentic Google Maps Intelligence Platform for Ghana - Autonomous Business Opportunity Discovery, Micro SaaS Engine & AI Sales Pipelines",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
