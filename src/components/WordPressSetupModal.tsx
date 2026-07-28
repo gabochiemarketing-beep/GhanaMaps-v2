@@ -125,17 +125,17 @@ function gabochie_mkt_admin_page_render() {
             <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 space-y-2">
               <h4 className="font-bold text-emerald-900 flex items-center gap-2 text-sm">
                 <Globe className="w-4 h-4 text-emerald-700" />
-                Step-by-Step LocalWP Setup on your Desktop
+                LocalWP & GitHub Repository Syncing Guide
               </h4>
               <ol className="list-decimal list-inside space-y-2 text-emerald-850 font-medium">
                 <li>
-                  <strong>Keep your React app running:</strong> In your terminal (<code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">GhanaMaps-v2-main</code>), run <code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">npm run dev</code>. It serves the platform at <code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">http://localhost:3000</code>.
+                  <strong>GitHub Remote Repo:</strong> <code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">https://github.com/gabochiemarketing-beep/GhanaMaps-v2</code>
                 </li>
                 <li>
-                  <strong>Your LocalWP Site:</strong> Your WordPress site is active at <code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">http://localhost:10022/</code> (WP Admin at <code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">http://localhost:10022/wp-admin/</code>).
+                  <strong>LocalWP Plugin Path:</strong> <code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">C:\Users\user\Local Sites\gabochiemkt\app\public\wp-content\plugins\gabochie-gis-bi\</code>
                 </li>
                 <li>
-                  <strong>Clean Separation:</strong> Embed the BI Admin Dashboard directly inside your LocalWP WordPress Admin menu, and display the Public Membership Landing Page on your frontend pages (<code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">http://localhost:10022/</code>).
+                  <strong>WordPress Frontend Page:</strong> Edit your home page in WP Admin (<code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">http://localhost:10022/wp-admin/</code>) and add the <code className="bg-white px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-emerald-800">[gabochie_gis]</code> Shortcode block!
                 </li>
               </ol>
             </div>
