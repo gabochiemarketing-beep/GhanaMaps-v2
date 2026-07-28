@@ -46,25 +46,25 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-slate-200 text-slate-800 shadow-sm">
       {/* Top Banner / System Status */}
-      <div className="bg-slate-50 px-4 py-1.5 border-b border-slate-200 text-xs flex flex-wrap items-center justify-between gap-2">
+      <div className="bg-emerald-50/80 px-4 py-1.5 border-b border-emerald-200/80 text-xs flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 font-bold text-emerald-600">
+          <div className="flex items-center gap-1.5 font-bold text-emerald-800">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            GHANAMAPS BI v1.0
+            mkt.gabochie.com
           </div>
-          <span className="text-slate-300">|</span>
-          <span className="text-slate-500 font-medium hidden sm:inline">
-            Enterprise Agentic Google Maps Intelligence Platform for Ghana 🇬🇭
+          <span className="text-emerald-300">|</span>
+          <span className="text-emerald-700 font-medium hidden sm:inline">
+            Gabochie Marketing GIS & Maps BI SaaS Platform 🇬🇭
           </span>
         </div>
-        <div className="flex items-center gap-4 text-slate-500 font-medium">
+        <div className="flex items-center gap-4 text-emerald-700 font-medium">
           <div className="flex items-center gap-1.5">
-            <Building2 className="w-3.5 h-3.5 text-indigo-600" />
+            <Building2 className="w-3.5 h-3.5 text-emerald-600" />
             <span className="font-bold text-slate-800">{totalBusinesses}</span> Businesses Tracked
           </div>
-          <span className="text-slate-300">|</span>
-          <div className="flex items-center gap-1 text-emerald-600 font-semibold">
-            <Bot className="w-3.5 h-3.5" />
+          <span className="text-emerald-300">|</span>
+          <div className="flex items-center gap-1 text-emerald-800 font-semibold">
+            <Bot className="w-3.5 h-3.5 text-emerald-600" />
             18 AI Agents Active
           </div>
         </div>
@@ -74,20 +74,22 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
         {/* Brand & Logo */}
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold shadow-sm shadow-indigo-200">
-            <Globe className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 rounded-xl flex items-center justify-center text-white font-black shadow-md shadow-emerald-200/60 relative group">
+            <MapPin className="w-6 h-6 text-white drop-shadow-sm group-hover:scale-110 transition-transform" />
+            <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 rounded-full border-2 border-white"></span>
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-bold text-lg tracking-tight text-slate-900 flex items-center gap-1.5">
-                GhanaMaps <span className="text-indigo-600 font-bold">BI</span>
+              <h1 className="font-black text-lg tracking-tight text-slate-900 flex items-center gap-1.5">
+                Gabochie <span className="text-emerald-600 font-black">MKT</span>
               </h1>
-              <span className="bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-bold px-2 py-0.5 rounded-md">
-                GHANA 16 REGIONS
+              <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-extrabold px-2 py-0.5 rounded-md flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-emerald-700" />
+                mkt.gabochie.com
               </span>
             </div>
             <p className="text-xs text-slate-500 font-medium">
-              Autonomous Opportunity Discovery & Micro SaaS Intelligence
+              GIS Maps Intelligence & Membership SaaS Engine
             </p>
           </div>
         </div>
@@ -124,7 +126,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Action CTAs */}
           <button
             onClick={onOpenDiscoverModal}
-            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-3.5 py-2 rounded-xl text-xs active:scale-95 transition-all shadow-sm whitespace-nowrap"
+            className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-2 rounded-xl text-xs active:scale-95 transition-all shadow-sm shadow-emerald-200/60 whitespace-nowrap"
           >
             <PlusCircle className="w-4 h-4" />
             <span>Discover Opportunities</span>
@@ -139,8 +141,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('public_landing')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-bold transition-all ${
               activeTab === 'public_landing'
-                ? 'bg-indigo-600 text-white shadow-sm'
-                : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200'
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200'
             }`}
           >
             <Globe className="w-4 h-4" />
@@ -151,11 +153,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('dashboard')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-semibold transition-all ${
               activeTab === 'dashboard'
-                ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-emerald-50/50'
             }`}
           >
-            <BarChart3 className="w-4 h-4 text-indigo-600" />
+            <BarChart3 className="w-4 h-4 text-emerald-600" />
             <span>Executive Dashboard</span>
           </button>
 
@@ -163,11 +165,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('gis_map')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-semibold transition-all ${
               activeTab === 'gis_map'
-                ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-emerald-50/50'
             }`}
           >
-            <MapPin className="w-4 h-4 text-indigo-600" />
+            <MapPin className="w-4 h-4 text-emerald-600" />
             <span>Interactive GIS Map</span>
           </button>
 
@@ -175,11 +177,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('explorer')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-semibold transition-all ${
               activeTab === 'explorer'
-                ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-emerald-50/50'
             }`}
           >
-            <Building2 className="w-4 h-4 text-indigo-600" />
+            <Building2 className="w-4 h-4 text-emerald-600" />
             <span>Business Explorer</span>
           </button>
 
@@ -187,13 +189,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('founder_mode')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-semibold transition-all ${
               activeTab === 'founder_mode'
-                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs'
-                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                ? 'bg-emerald-600 text-white shadow-sm font-bold'
+                : 'text-emerald-800 bg-emerald-50/70 border border-emerald-200/80 hover:bg-emerald-100/70'
             }`}
           >
-            <Zap className="w-4 h-4 text-emerald-600" />
+            <Zap className="w-4 h-4 text-amber-500 fill-amber-400 animate-pulse" />
             <span>AI Founder Mode</span>
-            <span className="bg-emerald-600 text-white font-bold text-[9px] px-1.5 py-0.2 rounded-full">
+            <span className="bg-amber-400 text-slate-950 font-black text-[9px] px-1.5 py-0.2 rounded-full">
               HOT
             </span>
           </button>
@@ -202,11 +204,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('microsaas')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-semibold transition-all ${
               activeTab === 'microsaas'
-                ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-emerald-50/50'
             }`}
           >
-            <Layers className="w-4 h-4 text-indigo-600" />
+            <Layers className="w-4 h-4 text-emerald-600" />
             <span>Micro SaaS Studio</span>
           </button>
 
@@ -214,11 +216,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('agents')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-semibold transition-all ${
               activeTab === 'agents'
-                ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-emerald-50/50'
             }`}
           >
-            <Bot className="w-4 h-4 text-indigo-600" />
+            <Bot className="w-4 h-4 text-emerald-600" />
             <span>18 AI Agents Studio</span>
           </button>
 
@@ -226,11 +228,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('analytics')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-semibold transition-all ${
               activeTab === 'analytics'
-                ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-emerald-50/50'
             }`}
           >
-            <Sparkles className="w-4 h-4 text-purple-600" />
+            <Sparkles className="w-4 h-4 text-emerald-600" />
             <span>Market Gaps Analysis</span>
           </button>
 
@@ -238,8 +240,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('leads')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-semibold transition-all ${
               activeTab === 'leads'
-                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-emerald-50/50'
             }`}
           >
             <Users className="w-4 h-4 text-emerald-600" />
@@ -249,9 +251,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="ml-auto flex items-center gap-2">
             <button
               onClick={onOpenExportModal}
-              className="flex items-center gap-1 text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+              className="flex items-center gap-1 text-slate-700 hover:text-slate-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
             >
-              <FileText className="w-3.5 h-3.5 text-indigo-600" />
+              <FileText className="w-3.5 h-3.5 text-emerald-600" />
               <span>Export PDF/CSV</span>
             </button>
           </div>

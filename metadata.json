@@ -1,6 +1,6 @@
 {
-  "name": "GhanaMaps BI Platform",
-  "description": "Enterprise Agentic Google Maps Intelligence Platform for Ghana - Autonomous Business Opportunity Discovery, Micro SaaS Engine & AI Sales Pipelines",
+  "name": "Gabochie MKT GIS Platform",
+  "description": "Gabochie Marketing GIS & Maps BI SaaS Platform at mkt.gabochie.com - Autonomous Business Opportunity Discovery, Membership SaaS Engine & AI Sales Pipelines",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

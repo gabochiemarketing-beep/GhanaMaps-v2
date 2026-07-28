@@ -89,42 +89,42 @@ export const PublicLandingPage: React.FC<PublicLandingPageProps> = ({
   return (
     <div className="space-y-16 pb-20">
       {/* HERO SECTION */}
-      <section className="relative overflow-hidden bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-12 text-white shadow-2xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
+      <section className="relative overflow-hidden bg-slate-900 border border-emerald-900/60 rounded-3xl p-6 sm:p-12 text-white shadow-2xl">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-teal-500/15 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Left Column: Value Prop */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-bold px-3.5 py-1.5 rounded-full">
-              <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
-              <span>GHANA'S #1 MAPS BI & AI SALES ENGINE</span>
+            <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-black px-4 py-1.5 rounded-full shadow-inner">
+              <MapPin className="w-4 h-4 text-emerald-400 fill-emerald-400 animate-pulse" />
+              <span>mkt.gabochie.com • GIS MAPS BI & MEMBERSHIP SAAS</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+            <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
               Discover Underserved Businesses Across Ghana & Close{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-400">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300">
                 GHS 10,000+ Deals
               </span>
             </h1>
 
             <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
-              Google Maps intelligence for all 16 Ghanaian regions. Identify digital gaps, automate WhatsApp pitch scripts, and launch high-margin agency services or Micro SaaS products.
+              Gabochie Marketing GIS platform hosted at <span className="text-emerald-400 font-bold font-mono">mkt.gabochie.com</span>. Google Maps intelligence for all 16 Ghanaian regions. Identify digital gaps, automate WhatsApp pitch scripts, and run a high-margin Membership SaaS.
             </p>
 
             {/* Quick Metrics */}
             <div className="grid grid-cols-3 gap-3 pt-2">
-              <div className="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-3 text-center">
+              <div className="bg-slate-800/90 border border-emerald-800/60 rounded-2xl p-3 text-center">
                 <div className="text-xl sm:text-2xl font-black text-emerald-400">16</div>
                 <div className="text-[11px] text-slate-300 font-medium uppercase tracking-wider">Regions Benchmarked</div>
               </div>
 
-              <div className="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-3 text-center">
-                <div className="text-xl sm:text-2xl font-black text-indigo-400">18</div>
+              <div className="bg-slate-800/90 border border-emerald-800/60 rounded-2xl p-3 text-center">
+                <div className="text-xl sm:text-2xl font-black text-teal-300">18</div>
                 <div className="text-[11px] text-slate-300 font-medium uppercase tracking-wider">Autonomous AI Agents</div>
               </div>
 
-              <div className="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-3 text-center">
+              <div className="bg-slate-800/90 border border-emerald-800/60 rounded-2xl p-3 text-center">
                 <div className="text-xl sm:text-2xl font-black text-amber-400">GHS 15k</div>
                 <div className="text-[11px] text-slate-300 font-medium uppercase tracking-wider">Avg Deal Potential</div>
               </div>
@@ -134,15 +134,15 @@ export const PublicLandingPage: React.FC<PublicLandingPageProps> = ({
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <a
                 href="#lead-form"
-                className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold px-6 py-3.5 rounded-2xl text-sm transition-all shadow-lg hover:shadow-indigo-500/25"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black px-6 py-3.5 rounded-2xl text-sm transition-all shadow-lg shadow-emerald-900/40 hover:scale-102"
               >
                 <span>Get Instant Demo & Leads</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 text-slate-950" />
               </a>
 
               <button
                 onClick={onOpenAdminDashboard}
-                className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold px-6 py-3.5 rounded-2xl text-sm transition-all"
+                className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-emerald-800 font-bold px-6 py-3.5 rounded-2xl text-sm transition-all"
               >
                 <Bot className="w-4 h-4 text-emerald-400" />
                 <span>Launch BI Admin Studio</span>
@@ -641,49 +641,59 @@ export const PublicLandingPage: React.FC<PublicLandingPageProps> = ({
       {/* FAQS & HOSTING EXPLANATION */}
       <section className="space-y-6">
         <div className="text-center max-w-xl mx-auto space-y-2">
-          <div className="inline-flex items-center gap-1.5 text-indigo-600 text-xs font-bold uppercase tracking-wider">
-            <HelpCircle className="w-4 h-4" />
+          <div className="inline-flex items-center gap-1.5 text-emerald-700 text-xs font-bold uppercase tracking-wider">
+            <HelpCircle className="w-4 h-4 text-emerald-600" />
             <span>Frequently Asked Questions</span>
           </div>
           <h2 className="text-2xl font-black text-slate-900">
-            Frequently Asked Questions
+            LocalWP Testing & Hosting at mkt.gabochie.com
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2 shadow-2xs">
-            <h3 className="font-bold text-slate-900 text-sm">
-              How do I deploy this on my existing WordPress or Namecheap hosting?
+          <div className="bg-white border border-emerald-200/80 rounded-2xl p-5 space-y-2 shadow-2xs">
+            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-emerald-600 shrink-0" />
+              Can I test this in LocalWP (WordPress desktop) first?
             </h3>
             <p className="text-slate-600 leading-relaxed font-medium">
-              This application compiles into a single-page app (`npm run build`). On Namecheap cPanel or WordPress, you can upload the build bundle to a subdirectory (e.g. `yourwebsite.com/app/`) or embed it seamlessly in WordPress using an `&lt;iframe&gt;` or custom HTML page template.
+              <strong className="text-emerald-800">Yes, absolutely!</strong> You can run or test this app on your desktop alongside LocalWP in 3 easy ways:
+              <br />
+              1. <strong>Subfolder Upload:</strong> Run <code className="bg-slate-100 text-emerald-700 px-1 py-0.5 rounded">npm run build</code> and drop the compiled <code className="bg-slate-100 text-slate-800 px-1 py-0.5 rounded">dist/</code> folder into your LocalWP site directory e.g., <code className="bg-slate-100 text-slate-800 px-1 py-0.5 rounded">app/public/gis-saas/</code>.
+              <br />
+              2. <strong>WordPress Shortcode / iFrame:</strong> Embed it inside any WordPress page in LocalWP using <code className="bg-slate-100 text-slate-800 px-1 py-0.5 rounded">&lt;iframe src="http://localhost:3000" width="100%" height="800"&gt;&lt;/iframe&gt;</code> or a custom page template.
+              <br />
+              3. <strong>Standalone Node Server:</strong> Run <code className="bg-slate-100 text-emerald-700 px-1 py-0.5 rounded">npm run dev</code> locally on your desktop to test all API routes, Gemini AI features, and lead management instantly.
             </p>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2 shadow-2xs">
-            <h3 className="font-bold text-slate-900 text-sm">
-              Is this ready to generate leads right now?
+          <div className="bg-white border border-emerald-200/80 rounded-2xl p-5 space-y-2 shadow-2xs">
+            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+              <Globe className="w-4 h-4 text-emerald-600 shrink-0" />
+              How do I host this on mkt.gabochie.com as a Membership SaaS?
             </h3>
             <p className="text-slate-600 leading-relaxed font-medium">
-              Yes! The lead capture mechanism, AI Agents (powered by Gemini 3.6 Flash), WhatsApp script generator, PDF/CSV report exports, and 16-region GIS map are 100% operational and plug-and-play.
+              Point your domain <strong className="text-emerald-800">mkt.gabochie.com</strong> to your server (e.g. Node.js Cloud container, cPanel Node App, or VPS). The platform includes built-in membership pricing tiers (Starter Agency GHS 499/mo, Founder Pro GHS 1,299/mo, Enterprise BI GHS 2,999/mo) and Mobile Money payment gateways (MTN MoMo, Telecel Cash, Paystack) for effortless subscriber onboarding.
             </p>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2 shadow-2xs">
-            <h3 className="font-bold text-slate-900 text-sm">
-              How do payment collections work in Ghana?
+          <div className="bg-white border border-emerald-200/80 rounded-2xl p-5 space-y-2 shadow-2xs">
+            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
+              What color palette and brand identity is used?
             </h3>
             <p className="text-slate-600 leading-relaxed font-medium">
-              You can accept payments via MTN Mobile Money, Telecel Cash, or Paystack card payments. The lead form captures client details so you can send them direct MoMo payment links or automated invoices.
+              We updated the app to a crisp <strong className="text-emerald-800">light green & emerald color palette</strong> with a custom <strong className="text-emerald-800">Maps Pin icon badge</strong>, rebranded for <strong className="text-emerald-800">mkt.gabochie.com</strong> across all header components, landing pages, and leads consoles.
             </p>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2 shadow-2xs">
-            <h3 className="font-bold text-slate-900 text-sm">
-              Can I access the Admin Dashboard directly?
+          <div className="bg-white border border-emerald-200/80 rounded-2xl p-5 space-y-2 shadow-2xs">
+            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+              <Zap className="w-4 h-4 text-emerald-600 shrink-0" />
+              Are AI agents and Auto-Move pipeline rules active?
             </h3>
             <p className="text-slate-600 leading-relaxed font-medium">
-              Yes! Use the navigation bar at the top or click "Launch BI Admin Studio" to switch between the Public Landing Page and the full Business Intelligence Console.
+              Yes! All 18 Gemini-powered AI Agents and the Kanban Board Auto-Move feature (automatically advancing leads with &gt;90% win scores to Closed Won) are fully integrated and functional.
             </p>
           </div>
         </div>
