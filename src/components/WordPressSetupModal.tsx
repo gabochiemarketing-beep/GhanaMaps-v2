@@ -35,9 +35,15 @@ Version: 1.0.0
 Author: Gabochie Marketing
 */
 
-// Shortcode for Frontend WordPress Pages at http://localhost:10022/
+// Shortcode [gabochie_gis] for Frontend WordPress Pages at http://localhost:10022/
 function gabochie_mkt_gis_shortcode($atts) {
-    return '<iframe src="http://localhost:3000" width="100%" height="850px" style="border:none; border-radius:12px;"></iframe>';
+    return '<style>
+        .gabochie-gis-wrapper { width:100%; max-width:100vw; position:relative; margin-left:50%; transform:translateX(-50%); padding:0; }
+        .gabochie-gis-iframe { width:100%; height:90vh; min-height:750px; border:none; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.08); display:block; }
+    </style>
+    <div class="gabochie-gis-wrapper">
+        <iframe src="http://localhost:3000" class="gabochie-gis-iframe" allow="geolocation; camera; microphone"></iframe>
+    </div>';
 }
 add_shortcode('gabochie_gis', 'gabochie_mkt_gis_shortcode');
 

@@ -16,15 +16,38 @@ if (!defined('ABSPATH')) {
 function gabochie_mkt_gis_shortcode($atts) {
     $atts = shortcode_atts(array(
         'url' => 'http://localhost:3000',
-        'height' => '850px',
+        'height' => '90vh',
+        'fullwidth' => 'true'
     ), $atts, 'gabochie_gis');
 
+    $height = esc_attr($atts['height']);
+    $url = esc_url($atts['url']);
+
     return sprintf(
-        '<div className="gabochie-gis-container" style="width:100%%; max-width:100%%; overflow:hidden; border-radius:16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin: 20px 0;">
-            <iframe src="%s" width="100%%" height="%s" style="border:none; width:100%%; display:block;" allow="geolocation; camera; microphone"></iframe>
+        '<style>
+            .gabochie-gis-wrapper {
+                width: 100%%;
+                max-width: 100vw;
+                position: relative;
+                margin-left: 50%%;
+                transform: translateX(-50%%);
+                padding: 0;
+            }
+            .gabochie-gis-iframe {
+                width: 100%%;
+                height: %s;
+                min-height: 700px;
+                border: none;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+                display: block;
+            }
+        </style>
+        <div class="gabochie-gis-wrapper">
+            <iframe src="%s" class="gabochie-gis-iframe" allow="geolocation; camera; microphone"></iframe>
         </div>',
-        esc_url($atts['url']),
-        esc_attr($atts['height'])
+        $height,
+        $url
     );
 }
 add_shortcode('gabochie_gis', 'gabochie_mkt_gis_shortcode');
