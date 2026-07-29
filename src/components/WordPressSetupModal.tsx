@@ -8,7 +8,7 @@ interface WordPressSetupModalProps {
 
 export const WordPressSetupModal: React.FC<WordPressSetupModalProps> = ({ isOpen, onClose }) => {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState<'iframe' | 'plugin' | 'localwp' | 'theme'>('theme');
+  const [activeTab, setActiveTab] = useState<'iframe' | 'plugin' | 'localwp' | 'theme' | 'shortcodes'>('shortcodes');
 
   if (!isOpen) return null;
 
@@ -127,6 +127,16 @@ function gabochie_mkt_admin_page_render() {
         {/* Mode Selector Tabs */}
         <div className="flex border-b border-slate-200 gap-1 overflow-x-auto">
           <button
+            onClick={() => setActiveTab('shortcodes')}
+            className={`pb-3 text-xs font-bold transition-all border-b-2 px-3 whitespace-nowrap ${
+              activeTab === 'shortcodes'
+                ? 'border-emerald-600 text-emerald-700 font-black'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            📋 Shortcode Guide
+          </button>
+          <button
             onClick={() => setActiveTab('theme')}
             className={`pb-3 text-xs font-bold transition-all border-b-2 px-3 whitespace-nowrap ${
               activeTab === 'theme'
@@ -157,6 +167,120 @@ function gabochie_mkt_admin_page_render() {
             WP Admin Sidebar Plugin
           </button>
         </div>
+
+        {/* Tab -1: Shortcode Cheat Sheet */}
+        {activeTab === 'shortcodes' && (
+          <div className="space-y-4 text-xs text-slate-700">
+            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 space-y-2">
+              <h4 className="font-bold text-emerald-900 flex items-center gap-2 text-sm">
+                <Globe className="w-4 h-4 text-emerald-700" />
+                How to Use Shortcodes in WordPress
+              </h4>
+              <p className="text-emerald-850 font-medium">
+                1. Edit any WordPress Page (or Site Editor) &rarr; 2. Add a <strong>Shortcode Block</strong> &rarr; 3. Paste any shortcode below!
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="bg-slate-900 text-slate-100 p-3.5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-2">
+                <div>
+                  <div className="text-[10px] uppercase font-bold text-emerald-400">Public Homepage Portal</div>
+                  <div className="font-mono text-emerald-300 text-xs font-bold mt-1">[gabochie_gis view="public_landing"]</div>
+                  <p className="text-[11px] text-slate-400 mt-1">Embeds public map search & hero portal for visitors.</p>
+                </div>
+                <button
+                  onClick={() => handleCopy('[gabochie_gis view="public_landing"]', 10)}
+                  className="self-end bg-slate-800 hover:bg-slate-700 text-emerald-300 text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 border border-slate-700"
+                >
+                  {copiedIndex === 10 ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedIndex === 10 ? 'Copied' : 'Copy'}</span>
+                </button>
+              </div>
+
+              <div className="bg-slate-900 text-slate-100 p-3.5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-2">
+                <div>
+                  <div className="text-[10px] uppercase font-bold text-emerald-400">BI Analytics & Lead Dashboard</div>
+                  <div className="font-mono text-emerald-300 text-xs font-bold mt-1">[gabochie_gis view="dashboard"]</div>
+                  <p className="text-[11px] text-slate-400 mt-1">Displays internal BI metrics, charts, and lead counts.</p>
+                </div>
+                <button
+                  onClick={() => handleCopy('[gabochie_gis view="dashboard"]', 11)}
+                  className="self-end bg-slate-800 hover:bg-slate-700 text-emerald-300 text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 border border-slate-700"
+                >
+                  {copiedIndex === 11 ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedIndex === 11 ? 'Copied' : 'Copy'}</span>
+                </button>
+              </div>
+
+              <div className="bg-slate-900 text-slate-100 p-3.5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-2">
+                <div>
+                  <div className="text-[10px] uppercase font-bold text-emerald-400">Interactive GIS Map</div>
+                  <div className="font-mono text-emerald-300 text-xs font-bold mt-1">[gabochie_gis view="map_explorer"]</div>
+                  <p className="text-[11px] text-slate-400 mt-1">Full interactive Ghana map with region filters.</p>
+                </div>
+                <button
+                  onClick={() => handleCopy('[gabochie_gis view="map_explorer"]', 12)}
+                  className="self-end bg-slate-800 hover:bg-slate-700 text-emerald-300 text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 border border-slate-700"
+                >
+                  {copiedIndex === 12 ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedIndex === 12 ? 'Copied' : 'Copy'}</span>
+                </button>
+              </div>
+
+              <div className="bg-slate-900 text-slate-100 p-3.5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-2">
+                <div>
+                  <div className="text-[10px] uppercase font-bold text-emerald-400">B2B Business Directory</div>
+                  <div className="font-mono text-emerald-300 text-xs font-bold mt-1">[gabochie_gis view="directory"]</div>
+                  <p className="text-[11px] text-slate-400 mt-1">Searchable listings of Ghana businesses & leads.</p>
+                </div>
+                <button
+                  onClick={() => handleCopy('[gabochie_gis view="directory"]', 13)}
+                  className="self-end bg-slate-800 hover:bg-slate-700 text-emerald-300 text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 border border-slate-700"
+                >
+                  {copiedIndex === 13 ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedIndex === 13 ? 'Copied' : 'Copy'}</span>
+                </button>
+              </div>
+
+              <div className="bg-slate-900 text-slate-100 p-3.5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-2">
+                <div>
+                  <div className="text-[10px] uppercase font-bold text-emerald-400">AI Lead Hunter Console</div>
+                  <div className="font-mono text-emerald-300 text-xs font-bold mt-1">[gabochie_gis view="lead_hunter"]</div>
+                  <p className="text-[11px] text-slate-400 mt-1">AI search agent for finding leads across regions.</p>
+                </div>
+                <button
+                  onClick={() => handleCopy('[gabochie_gis view="lead_hunter"]', 14)}
+                  className="self-end bg-slate-800 hover:bg-slate-700 text-emerald-300 text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 border border-slate-700"
+                >
+                  {copiedIndex === 14 ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedIndex === 14 ? 'Copied' : 'Copy'}</span>
+                </button>
+              </div>
+
+              <div className="bg-slate-900 text-slate-100 p-3.5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-2">
+                <div>
+                  <div className="text-[10px] uppercase font-bold text-emerald-400">Membership SaaS & Pricing</div>
+                  <div className="font-mono text-emerald-300 text-xs font-bold mt-1">[gabochie_gis view="membership"]</div>
+                  <p className="text-[11px] text-slate-400 mt-1">Tier pricing, payments & subscriber registration.</p>
+                </div>
+                <button
+                  onClick={() => handleCopy('[gabochie_gis view="membership"]', 15)}
+                  className="self-end bg-slate-800 hover:bg-slate-700 text-emerald-300 text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 border border-slate-700"
+                >
+                  {copiedIndex === 15 ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedIndex === 15 ? 'Copied' : 'Copy'}</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-slate-100 p-3 rounded-xl text-slate-700">
+              <strong className="text-slate-900 font-bold">Custom Height Example:</strong>
+              <code className="bg-white px-2 py-0.5 rounded border border-slate-300 text-emerald-800 font-mono ml-2">
+                [gabochie_gis view="dashboard" height="950px"]
+              </code>
+            </div>
+          </div>
+        )}
 
         {/* Tab 0: Custom Theme */}
         {activeTab === 'theme' && (
