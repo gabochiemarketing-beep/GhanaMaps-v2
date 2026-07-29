@@ -171,13 +171,33 @@ function gabochie_mkt_admin_page_render() {
         {/* Tab -1: Shortcode Cheat Sheet */}
         {activeTab === 'shortcodes' && (
           <div className="space-y-4 text-xs text-slate-700">
+            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 space-y-2 text-amber-900">
+              <h4 className="font-bold flex items-center gap-1.5 text-xs text-amber-900">
+                <Check className="w-4 h-4 text-amber-600" />
+                Fixing Git Pull Conflict in LocalWP terminal:
+              </h4>
+              <p className="text-[11px] leading-relaxed text-amber-800">
+                If Git says <i>"untracked working tree files would be overwritten"</i>, run this command in your Git Bash terminal to sync cleanly:
+              </p>
+              <div className="bg-slate-900 text-emerald-300 font-mono p-2 rounded-lg text-[11px] flex items-center justify-between">
+                <code>rm -f gabochie-gis-bi.php && git pull origin main</code>
+                <button
+                  onClick={() => handleCopy('rm -f gabochie-gis-bi.php && git pull origin main', 99)}
+                  className="bg-slate-800 text-slate-200 px-2 py-0.5 rounded text-[10px] font-sans"
+                >
+                  {copiedIndex === 99 ? 'Copied' : 'Copy Fix Command'}
+                </button>
+              </div>
+            </div>
+
             <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 space-y-2">
               <h4 className="font-bold text-emerald-900 flex items-center gap-2 text-sm">
                 <Globe className="w-4 h-4 text-emerald-700" />
-                How to Use Shortcodes in WordPress
+                Where Each Shortcode Belongs in WordPress
               </h4>
-              <p className="text-emerald-850 font-medium">
-                1. Edit any WordPress Page (or Site Editor) &rarr; 2. Add a <strong>Shortcode Block</strong> &rarr; 3. Paste any shortcode below!
+              <p className="text-emerald-850 font-medium leading-relaxed">
+                • <strong>WP Admin Sidebar (Internal Console)</strong>: Automatically added by the plugin menu! Clicking <strong>"Gabochie GIS Console"</strong> in wp-admin loads the <strong>BI Analytics Dashboard</strong> automatically.<br />
+                • <strong>Public Pages (Front-Facing Site)</strong>: Create standard WordPress pages in <i>Pages &rarr; Add New</i> and paste a shortcode into a <strong>Shortcode Block</strong>.
               </p>
             </div>
 
