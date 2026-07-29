@@ -174,19 +174,14 @@ function gabochie_mkt_admin_page_render() {
             <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 space-y-2 text-amber-900">
               <h4 className="font-bold flex items-center gap-1.5 text-xs text-amber-900">
                 <Check className="w-4 h-4 text-amber-600" />
-                Fixing Git Pull Conflict in LocalWP terminal:
+                Plugin Disappeared After Git Pull? Quick Fix:
               </h4>
               <p className="text-[11px] leading-relaxed text-amber-800">
-                If Git says <i>"untracked working tree files would be overwritten"</i>, run this command in your Git Bash terminal to sync cleanly:
+                When you run <code className="bg-amber-100 px-1 py-0.5 rounded font-mono">rm -f</code> or <code className="bg-amber-100 px-1 py-0.5 rounded font-mono">git pull</code>, WordPress deactivates the plugin temporarily.
               </p>
-              <div className="bg-slate-900 text-emerald-300 font-mono p-2 rounded-lg text-[11px] flex items-center justify-between">
-                <code>rm -f gabochie-gis-bi.php && git pull origin main</code>
-                <button
-                  onClick={() => handleCopy('rm -f gabochie-gis-bi.php && git pull origin main', 99)}
-                  className="bg-slate-800 text-slate-200 px-2 py-0.5 rounded text-[10px] font-sans"
-                >
-                  {copiedIndex === 99 ? 'Copied' : 'Copy Fix Command'}
-                </button>
+              <div className="bg-white border border-amber-300 rounded-xl p-2 text-[11px] font-semibold text-amber-950 space-y-1">
+                <div>👉 <strong>Step 1:</strong> Go to <code className="text-emerald-700 font-mono">http://localhost:10022/wp-admin/plugins.php</code></div>
+                <div>👉 <strong>Step 2:</strong> Find <strong>Gabochie MKT GIS & Membership SaaS</strong> and click <strong className="text-emerald-700">Activate</strong>!</div>
               </div>
             </div>
 
