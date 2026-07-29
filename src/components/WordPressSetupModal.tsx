@@ -12,6 +12,14 @@ export const WordPressSetupModal: React.FC<WordPressSetupModalProps> = ({ isOpen
 
   if (!isOpen) return null;
 
+  const customThemeStyleCss = `/*
+Theme Name: Gabochie GIS Theme
+Theme URI: https://mkt.gabochie.com
+Author: Gabochie Marketing
+Description: 100% Full-Viewport Theme for Ghana Maps BI Platform.
+Version: 1.0.0
+*/`;
+
   const customThemeIndexPhp = `<?php
 /**
  * Theme Name: Gabochie GIS Theme
@@ -156,35 +164,55 @@ function gabochie_mkt_admin_page_render() {
             <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 space-y-2">
               <h4 className="font-bold text-emerald-900 flex items-center gap-2 text-sm">
                 <Globe className="w-4 h-4 text-emerald-700" />
-                Why a Custom Theme is the Best Solution
+                Custom Theme Setup (Fixes Missing Stylesheet Error)
               </h4>
               <p className="text-emerald-850 font-medium">
-                Standard themes like Twenty Twenty-Five force 650px text margins and headers around shortcodes. Creating a dedicated 1-file custom theme makes your platform fill <strong>100% of the screen (edge-to-edge)</strong> with zero header/footer clutter!
+                WordPress requires <strong>two files</strong> in <code className="bg-white px-1 py-0.5 rounded border border-emerald-300 font-mono">wp-content/themes/gabochie-theme/</code>: <code className="bg-white px-1 py-0.5 rounded border border-emerald-300 font-mono">style.css</code> and <code className="bg-white px-1 py-0.5 rounded border border-emerald-300 font-mono">index.php</code>.
               </p>
             </div>
 
             <div className="space-y-2">
               <p className="font-bold text-slate-800">
-                1. Create Folder: <code className="bg-slate-100 px-1.5 py-0.5 rounded border text-slate-800 font-mono">C:\Users\user\Local Sites\gabochiemkt\app\public\wp-content\themes\gabochie-theme\</code>
-              </p>
-              <p className="font-bold text-slate-800">
-                2. Create file <code className="bg-slate-100 px-1.5 py-0.5 rounded border text-slate-800 font-mono">index.php</code> inside that folder with this exact code:
+                1. Open Folder: <code className="bg-slate-100 px-1.5 py-0.5 rounded border text-slate-800 font-mono">C:\Users\user\Local Sites\gabochiemkt\app\public\wp-content\themes\gabochie-theme\</code>
               </p>
             </div>
 
-            <div className="relative bg-slate-900 text-emerald-300 font-mono p-4 rounded-2xl overflow-x-auto text-[11px] leading-relaxed border border-slate-800">
-              <button
-                onClick={() => handleCopy(customThemeIndexPhp, 3)}
-                className="absolute top-3 right-3 bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1 rounded-lg text-[10px] font-sans flex items-center gap-1 border border-slate-700"
-              >
-                {copiedIndex === 3 ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                <span>{copiedIndex === 3 ? 'Copied!' : 'Copy index.php'}</span>
-              </button>
-              <pre>{customThemeIndexPhp}</pre>
+            {/* File 1: style.css */}
+            <div className="space-y-1">
+              <p className="font-bold text-slate-800">
+                2. Create file <code className="bg-emerald-100 text-emerald-900 px-1.5 py-0.5 rounded font-mono">style.css</code> (Fixes "Stylesheet is missing"):
+              </p>
+              <div className="relative bg-slate-900 text-emerald-300 font-mono p-4 rounded-2xl overflow-x-auto text-[11px] leading-relaxed border border-slate-800">
+                <button
+                  onClick={() => handleCopy(customThemeStyleCss, 4)}
+                  className="absolute top-3 right-3 bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1 rounded-lg text-[10px] font-sans flex items-center gap-1 border border-slate-700"
+                >
+                  {copiedIndex === 4 ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedIndex === 4 ? 'Copied!' : 'Copy style.css'}</span>
+                </button>
+                <pre>{customThemeStyleCss}</pre>
+              </div>
+            </div>
+
+            {/* File 2: index.php */}
+            <div className="space-y-1">
+              <p className="font-bold text-slate-800">
+                3. Create file <code className="bg-emerald-100 text-emerald-900 px-1.5 py-0.5 rounded font-mono">index.php</code> (Full Viewport Layout):
+              </p>
+              <div className="relative bg-slate-900 text-emerald-300 font-mono p-4 rounded-2xl overflow-x-auto text-[11px] leading-relaxed border border-slate-800">
+                <button
+                  onClick={() => handleCopy(customThemeIndexPhp, 3)}
+                  className="absolute top-3 right-3 bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1 rounded-lg text-[10px] font-sans flex items-center gap-1 border border-slate-700"
+                >
+                  {copiedIndex === 3 ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedIndex === 3 ? 'Copied!' : 'Copy index.php'}</span>
+                </button>
+                <pre>{customThemeIndexPhp}</pre>
+              </div>
             </div>
 
             <p className="font-medium text-slate-600">
-              3. Go to <code className="bg-slate-100 px-1.5 py-0.5 rounded border text-slate-800 font-mono">http://localhost:10022/wp-admin/themes.php</code> and click <strong>Activate</strong> on <strong>Gabochie GIS Theme</strong>!
+              4. Go to <code className="bg-slate-100 px-1.5 py-0.5 rounded border text-slate-800 font-mono">http://localhost:10022/wp-admin/themes.php</code> and click <strong>Activate</strong> on <strong>Gabochie GIS Theme</strong>!
             </p>
           </div>
         )}

@@ -23,7 +23,16 @@ import { INITIAL_GHANA_BUSINESSES } from './data/mockBusinessesGhana';
 import { BusinessRecord, GhanaRegion, BusinessCategory } from './types';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<string>('public_landing');
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get('tab');
+    if (tabParam) return tabParam;
+    if (window.location.hash) {
+      const hash = window.location.hash.replace('#', '');
+      if (hash) return hash;
+    }
+    return 'public_landing';
+  });
   const [businesses, setBusinesses] = useState<BusinessRecord[]>(INITIAL_GHANA_BUSINESSES);
   const [selectedRegion, setSelectedRegion] = useState<GhanaRegion | 'ALL'>('ALL');
   const [selectedCategory, setSelectedCategory] = useState<BusinessCategory | 'ALL'>('ALL');

@@ -67,8 +67,8 @@ function gabochie_mkt_add_admin_menu() {
 add_action('admin_menu', 'gabochie_mkt_add_admin_menu');
 
 function gabochie_mkt_admin_page_render() {
-    echo '<div className="wrap" style="margin:20px 20px 0 0;">
+    echo '<div style="margin:20px 20px 0 0;">
         <h1 style="font-weight:900; color:#0f172a; margin-bottom:15px;">Gabochie Marketing GIS & Maps BI Console</h1>
-        <iframe src="http://localhost:3000" width="100%" height="880px" style="border:none; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.12);"></iframe>
+        <iframe src="http://localhost:3000/?tab=dashboard" width="100%" height="880px" style="border:none; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.12);"></iframe>
     </div>';
 }
