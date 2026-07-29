@@ -12,16 +12,20 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
-// 1. Frontend Shortcode [gabochie_gis]
+// 1. Frontend Shortcode [gabochie_gis view="public_landing" height="90vh"]
 function gabochie_mkt_gis_shortcode($atts) {
     $atts = shortcode_atts(array(
         'url' => 'http://localhost:3000',
+        'view' => 'public_landing', // 'public_landing', 'dashboard', 'map_explorer', 'directory'
         'height' => '90vh',
-        'fullwidth' => 'true'
     ), $atts, 'gabochie_gis');
 
     $height = esc_attr($atts['height']);
-    $url = esc_url($atts['url']);
+    $view = esc_attr($atts['view']);
+    $baseUrl = esc_url($atts['url']);
+
+    // Construct URL with tab view parameter
+    $finalUrl = $baseUrl . '/?tab=' . $view;
 
     return sprintf(
         '<style>
@@ -47,7 +51,7 @@ function gabochie_mkt_gis_shortcode($atts) {
             <iframe src="%s" class="gabochie-gis-iframe" allow="geolocation; camera; microphone"></iframe>
         </div>',
         $height,
-        $url
+        $finalUrl
     );
 }
 add_shortcode('gabochie_gis', 'gabochie_mkt_gis_shortcode');
