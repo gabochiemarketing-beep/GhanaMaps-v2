@@ -23,16 +23,37 @@ import { INITIAL_GHANA_BUSINESSES } from './data/mockBusinessesGhana';
 import { BusinessRecord, GhanaRegion, BusinessCategory } from './types';
 
 export default function App() {
+  const [params] = useState(() => new URLSearchParams(window.location.search));
+  
+  // Parse and normalize tab aliases from URL query or window hash
   const [activeTab, setActiveTab] = useState<string>(() => {
-    const params = new URLSearchParams(window.location.search);
     const tabParam = params.get('tab');
-    if (tabParam) return tabParam;
-    if (window.location.hash) {
-      const hash = window.location.hash.replace('#', '');
-      if (hash) return hash;
-    }
-    return 'public_landing';
+    const hashParam = window.location.hash ? window.location.hash.replace('#', '') : null;
+    const rawTab = tabParam || hashParam || 'public_landing';
+
+    const aliasMap: Record<string, string> = {
+      map_explorer: 'gis_map',
+      gis_map: 'gis_map',
+      directory: 'explorer',
+      explorer: 'explorer',
+      lead_hunter: 'founder_mode',
+      founder_mode: 'founder_mode',
+      membership: 'microsaas',
+      microsaas: 'microsaas',
+      analytics: 'analytics',
+      leads: 'leads',
+      agents: 'agents',
+      dashboard: 'dashboard',
+      public_landing: 'public_landing',
+    };
+
+    return aliasMap[rawTab] || rawTab || 'public_landing';
   });
+
+  const isEmbedded = params.get('embed') === 'true';
+  const shouldHideFooter = params.get('hide_footer') === 'true' || (isEmbedded && params.get('hide_footer') !== 'false');
+  const shouldHideNav = params.get('hide_nav') === 'true';
+
   const [businesses, setBusinesses] = useState<BusinessRecord[]>(INITIAL_GHANA_BUSINESSES);
   const [selectedRegion, setSelectedRegion] = useState<GhanaRegion | 'ALL'>('ALL');
   const [selectedCategory, setSelectedCategory] = useState<BusinessCategory | 'ALL'>('ALL');
@@ -74,23 +95,25 @@ export default function App() {
     <div className="min-h-screen bg-[#F8FAFC] text-slate-800 font-sans antialiased selection:bg-emerald-500 selection:text-white flex flex-col justify-between">
       <div>
         {/* Navigation Header */}
-        <Navbar
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          selectedRegion={selectedRegion}
-          setSelectedRegion={setSelectedRegion}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          onOpenDiscoverModal={() => setIsDiscoverModalOpen(true)}
-          onOpenExportModal={() => setIsExportModalOpen(true)}
-          onOpenWPSetupModal={() => setIsWPSetupModalOpen(true)}
-          totalBusinesses={businesses.length}
-        />
+        {!shouldHideNav && (
+          <Navbar
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            selectedRegion={selectedRegion}
+            setSelectedRegion={setSelectedRegion}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            onOpenDiscoverModal={() => setIsDiscoverModalOpen(true)}
+            onOpenExportModal={() => setIsExportModalOpen(true)}
+            onOpenWPSetupModal={() => setIsWPSetupModalOpen(true)}
+            totalBusinesses={businesses.length}
+          />
+        )}
 
         {/* Main Container Viewport */}
-        <main className="max-w-7xl mx-auto px-4 pt-6">
+        <main className={`max-w-7xl mx-auto px-4 ${shouldHideNav ? 'pt-2' : 'pt-6'}`}>
           {activeTab === 'public_landing' && (
             <PublicLandingPage
               sampleBusinesses={businesses}
@@ -148,7 +171,7 @@ export default function App() {
       </div>
 
       {/* Global Footer */}
-      <Footer onNavigateTab={setActiveTab} />
+      {!shouldHideFooter && <Footer onNavigateTab={setActiveTab} />}
 
       {/* Modals */}
       <BusinessDetailModal
