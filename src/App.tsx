@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Navbar } from './components/Navbar';
 import { PublicLandingPage } from './components/PublicLandingPage';
 import { ExecutiveDashboard } from './components/ExecutiveDashboard';
@@ -63,9 +64,11 @@ export default function App() {
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const [isDiscoverModalOpen, setIsDiscoverModalOpen] = useState<boolean>(false);
   const [isWPSetupModalOpen, setIsWPSetupModalOpen] = useState<boolean>(false);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
 
   // Fetch businesses from backend API
   const fetchBusinesses = async () => {
+    setIsSyncing(true);
     try {
       const queryParams = new URLSearchParams();
       if (selectedRegion !== 'ALL') queryParams.append('region', selectedRegion);
@@ -79,6 +82,8 @@ export default function App() {
       }
     } catch (err) {
       console.error('Failed to fetch businesses from server:', err);
+    } finally {
+      setIsSyncing(false);
     }
   };
 
@@ -109,64 +114,75 @@ export default function App() {
             onOpenExportModal={() => setIsExportModalOpen(true)}
             onOpenWPSetupModal={() => setIsWPSetupModalOpen(true)}
             totalBusinesses={businesses.length}
+            isSyncing={isSyncing}
           />
         )}
 
         {/* Main Container Viewport */}
         <main className={`max-w-7xl mx-auto px-4 ${shouldHideNav ? 'pt-2' : 'pt-6'}`}>
-          {activeTab === 'public_landing' && (
-            <PublicLandingPage
-              sampleBusinesses={businesses}
-              onOpenAdminDashboard={() => setActiveTab('dashboard')}
-            />
-          )}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.22, ease: 'easeOut' }}
+            >
+              {activeTab === 'public_landing' && (
+                <PublicLandingPage
+                  sampleBusinesses={businesses}
+                  onOpenAdminDashboard={() => setActiveTab('dashboard')}
+                />
+              )}
 
-          {activeTab === 'dashboard' && (
-            <ExecutiveDashboard
-              businesses={businesses}
-              onNavigateTab={setActiveTab}
-              onSelectBusiness={(biz) => setSelectedBusiness(biz)}
-            />
-          )}
+              {activeTab === 'dashboard' && (
+                <ExecutiveDashboard
+                  businesses={businesses}
+                  onNavigateTab={setActiveTab}
+                  onSelectBusiness={(biz) => setSelectedBusiness(biz)}
+                />
+              )}
 
-          {activeTab === 'gis_map' && (
-            <InteractiveGISMap
-              businesses={businesses}
-              onSelectBusiness={(biz) => setSelectedBusiness(biz)}
-              selectedRegionFilter={selectedRegion}
-              onSelectRegionFilter={setSelectedRegion}
-            />
-          )}
+              {activeTab === 'gis_map' && (
+                <InteractiveGISMap
+                  businesses={businesses}
+                  onSelectBusiness={(biz) => setSelectedBusiness(biz)}
+                  selectedRegionFilter={selectedRegion}
+                  onSelectRegionFilter={setSelectedRegion}
+                />
+              )}
 
-          {activeTab === 'explorer' && (
-            <BusinessExplorer
-              businesses={businesses}
-              onSelectBusiness={(biz) => setSelectedBusiness(biz)}
-              selectedRegion={selectedRegion}
-              setSelectedRegion={setSelectedRegion}
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              onRunAgentForBusiness={handleRunAgentForBusiness}
-            />
-          )}
+              {activeTab === 'explorer' && (
+                <BusinessExplorer
+                  businesses={businesses}
+                  onSelectBusiness={(biz) => setSelectedBusiness(biz)}
+                  selectedRegion={selectedRegion}
+                  setSelectedRegion={setSelectedRegion}
+                  selectedCategory={selectedCategory}
+                  setSelectedCategory={setSelectedCategory}
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                  onRunAgentForBusiness={handleRunAgentForBusiness}
+                />
+              )}
 
-          {activeTab === 'founder_mode' && (
-            <AIFounderMode
-              businesses={businesses}
-              onSelectBusiness={(biz) => setSelectedBusiness(biz)}
-              onRunAgent={handleRunAgentForBusiness}
-            />
-          )}
+              {activeTab === 'founder_mode' && (
+                <AIFounderMode
+                  businesses={businesses}
+                  onSelectBusiness={(biz) => setSelectedBusiness(biz)}
+                  onRunAgent={handleRunAgentForBusiness}
+                />
+              )}
 
-          {activeTab === 'microsaas' && <MicroSaaSStudio />}
+              {activeTab === 'microsaas' && <MicroSaaSStudio />}
 
-          {activeTab === 'agents' && <AgentsOrchestratorView businesses={businesses} />}
+              {activeTab === 'agents' && <AgentsOrchestratorView businesses={businesses} />}
 
-          {activeTab === 'analytics' && <MarketGapsAnalytics />}
+              {activeTab === 'analytics' && <MarketGapsAnalytics />}
 
-          {activeTab === 'leads' && <LeadsManagerView />}
+              {activeTab === 'leads' && <LeadsManagerView />}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
 
@@ -184,6 +200,9 @@ export default function App() {
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
         businesses={businesses}
+        onImportBusinesses={(importedRecords) => {
+          setBusinesses((prev) => [...importedRecords, ...prev]);
+        }}
       />
 
       <DiscoverModal
