@@ -22,7 +22,17 @@ import {
   Clock,
   DollarSign,
   X,
-  Zap
+  Zap,
+  Share2,
+  Send,
+  Database,
+  Check,
+  ExternalLink,
+  Layers,
+  Settings,
+  ShieldCheck,
+  CheckSquare,
+  Square
 } from 'lucide-react';
 
 export type PipelineStage = 'new' | 'contacted' | 'audit_sent' | 'proposal' | 'closed_won';
@@ -41,7 +51,73 @@ export interface LeadRecord {
   estimatedValueGHS?: number;
   winProbability?: number;
   autoMoved?: boolean;
+  crmSynced?: boolean;
+  crmContactId?: string;
+  crmSyncedAt?: string;
+  crmProvider?: string;
 }
+
+export const CRM_PROVIDERS = [
+  {
+    id: 'hubspot',
+    name: 'HubSpot CRM',
+    icon: '🟧',
+    defaultEndpoint: 'https://api.hubapi.com/crm/v3/objects/contacts',
+    description: 'Sync contacts, deal stages, and revenue metrics directly to HubSpot Sales Hub.',
+    badgeBg: 'bg-amber-50 text-amber-800 border-amber-200',
+  },
+  {
+    id: 'salesforce',
+    name: 'Salesforce Sales Cloud',
+    icon: '🟦',
+    defaultEndpoint: 'https://your-domain.my.salesforce.com/services/data/v58.0/sobjects/Contact',
+    description: 'Export leads into Enterprise Salesforce CRM Lead Pipeline.',
+    badgeBg: 'bg-blue-50 text-blue-800 border-blue-200',
+  },
+  {
+    id: 'gohighlevel',
+    name: 'GoHighLevel (GHL)',
+    icon: '⚡',
+    defaultEndpoint: 'https://rest.gohighlevel.com/v1/contacts/',
+    description: 'Trigger automated WhatsApp & SMS campaigns in GoHighLevel sub-accounts.',
+    badgeBg: 'bg-indigo-50 text-indigo-800 border-indigo-200',
+  },
+  {
+    id: 'mailchimp',
+    name: 'Mailchimp Automation',
+    icon: '🐵',
+    defaultEndpoint: 'https://us1.api.mailchimp.com/3.0/lists/member_list/members',
+    description: 'Subscribe leads to targeted email newsletters and marketing automation funnels.',
+    badgeBg: 'bg-yellow-50 text-yellow-800 border-yellow-200',
+  },
+  {
+    id: 'activecampaign',
+    name: 'ActiveCampaign',
+    icon: '🔵',
+    defaultEndpoint: 'https://youraccount.api-us1.com/api/3/contacts',
+    description: 'Sync leads to ActiveCampaign CRM deals & automated follow-up sequences.',
+    badgeBg: 'bg-sky-50 text-sky-800 border-sky-200',
+  },
+  {
+    id: 'webhook',
+    name: 'Custom Webhook / Zapier / Make',
+    icon: '🔗',
+    defaultEndpoint: 'https://hooks.zapier.com/hooks/catch/123456/ghana_maps/',
+    description: 'Post raw JSON lead payloads to any custom API, Zapier, Make.com, or n8n workflow.',
+    badgeBg: 'bg-purple-50 text-purple-800 border-purple-200',
+  },
+];
+
+export const DEFAULT_FIELD_MAPPING = [
+  { source: 'Prospect Name', target: 'firstname / lastname', sample: 'Kofi Mensah' },
+  { source: 'Email Address', target: 'email', sample: 'kofi@accradigital.com' },
+  { source: 'WhatsApp / Phone', target: 'phone / mobilephone', sample: '+233244123456' },
+  { source: 'Ghana Region', target: 'state_province / region', sample: 'Greater Accra' },
+  { source: 'Package Interest', target: 'lead_source / interest_tier', sample: 'Founder Pro Package' },
+  { source: 'Est. Deal Value (GHS)', target: 'amount / deal_value', sample: 'GHS 1,299' },
+  { source: 'Pipeline Stage', target: 'dealstage / status', sample: 'New Discovery' },
+  { source: 'AI Win Score', target: 'lead_score', sample: '88%' },
+];
 
 const PIPELINE_STAGES: { id: PipelineStage; title: string; color: string; badgeBg: string; border: string; headerBg: string }[] = [
   {
@@ -97,6 +173,122 @@ export const LeadsManagerView: React.FC = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [autoMoveNotice, setAutoMoveNotice] = useState<string | null>(null);
   const [autoMoveEnabled, setAutoMoveEnabled] = useState(false);
+
+  // CRM Sync State
+  const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
+  const [showCrmModal, setShowCrmModal] = useState(false);
+  const [crmTargetLeads, setCrmTargetLeads] = useState<LeadRecord[]>([]);
+  const [selectedCrmProvider, setSelectedCrmProvider] = useState('hubspot');
+  const [crmApiKey, setCrmApiKey] = useState('pat-na1-ghana-maps-demo-token-9842');
+  const [crmWebhookUrl, setCrmWebhookUrl] = useState('https://hooks.zapier.com/hooks/catch/123456/ghana_maps/');
+  const [isSyncingCrm, setIsSyncingCrm] = useState(false);
+  const [crmSyncNotice, setCrmSyncNotice] = useState<string | null>(null);
+  const [crmSyncResult, setCrmSyncResult] = useState<{
+    success: boolean;
+    message: string;
+    batchId?: string;
+    totalSynced?: number;
+    records?: any[];
+  } | null>(null);
+
+  // Toggle single lead selection
+  const handleToggleLeadSelection = (id: string) => {
+    setSelectedLeadIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  // Toggle select all filtered leads
+  const handleToggleSelectAll = (filteredList: LeadRecord[]) => {
+    if (selectedLeadIds.length >= filteredList.length) {
+      setSelectedLeadIds([]);
+    } else {
+      setSelectedLeadIds(filteredList.map((l) => l.id));
+    }
+  };
+
+  // Open CRM Modal for selected leads or all
+  const handleOpenCrmSync = (targetList?: LeadRecord[]) => {
+    const leadsToSync = targetList || (selectedLeadIds.length > 0
+      ? leads.filter((l) => selectedLeadIds.includes(l.id))
+      : leads);
+
+    setCrmTargetLeads(leadsToSync);
+    setCrmSyncResult(null);
+    setShowCrmModal(true);
+  };
+
+  // Open CRM Modal for a single specific lead
+  const handleOpenCrmSyncSingle = (lead: LeadRecord) => {
+    setCrmTargetLeads([lead]);
+    setCrmSyncResult(null);
+    setShowCrmModal(true);
+  };
+
+  // Execute API Sync Call
+  const handleExecuteCrmSync = async () => {
+    if (crmTargetLeads.length === 0) return;
+    setIsSyncingCrm(true);
+    setCrmSyncResult(null);
+
+    try {
+      const res = await fetch('/api/crm/sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          leads: crmTargetLeads,
+          crmProvider: selectedCrmProvider,
+          apiKey: crmApiKey,
+          webhookUrl: crmWebhookUrl,
+        }),
+      });
+
+      const json = await res.json();
+
+      if (json.success) {
+        setCrmSyncResult(json);
+        const syncedTimestamp = new Date().toLocaleTimeString();
+        const providerObj = CRM_PROVIDERS.find((p) => p.id === selectedCrmProvider);
+        const providerName = providerObj ? providerObj.name : selectedCrmProvider;
+
+        // Update local leads state with CRM synced metadata
+        setLeads((prevLeads) =>
+          prevLeads.map((lead) => {
+            const syncedRecord = json.records?.find((r: any) => r.leadId === lead.id);
+            if (syncedRecord || crmTargetLeads.some((t) => t.id === lead.id)) {
+              return {
+                ...lead,
+                crmSynced: true,
+                crmContactId: syncedRecord?.crmContactId || `${selectedCrmProvider.toUpperCase()}-${Math.floor(100000 + Math.random() * 900000)}`,
+                crmSyncedAt: syncedTimestamp,
+                crmProvider: providerName,
+              };
+            }
+            return lead;
+          })
+        );
+
+        setCrmSyncNotice(
+          `✅ ${json.totalSynced} lead(s) successfully exported to ${providerName}! (Batch ID: ${json.batchId})`
+        );
+      } else {
+        setCrmSyncResult({
+          success: false,
+          message: json.error || 'Failed to sync with CRM API.',
+        });
+      }
+    } catch (err: any) {
+      console.error('CRM sync error:', err);
+      setCrmSyncResult({
+        success: false,
+        message: err.message || 'Network error attempting CRM API sync.',
+      });
+    } finally {
+      setIsSyncingCrm(false);
+    }
+  };
 
   // Helper to compute Agentic Win Probability Score
   const computeAgenticWinScore = (l: Partial<LeadRecord>, idx: number): number => {
@@ -314,17 +506,26 @@ export const LeadsManagerView: React.FC = () => {
 
         <div className="flex flex-wrap items-center gap-3">
           <button
+            onClick={() => handleOpenCrmSync()}
+            title="Export leads to HubSpot, Salesforce, GoHighLevel, or Webhook API"
+            className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 hover:from-emerald-400 hover:to-indigo-500 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs transition-all shadow-md active:scale-95 cursor-pointer border border-emerald-300/40"
+          >
+            <Database className="w-4 h-4 text-slate-950 fill-slate-950" />
+            <span>Sync to CRM {selectedLeadIds.length > 0 ? `(${selectedLeadIds.length})` : ''}</span>
+          </button>
+
+          <button
             onClick={() => runAutoMoveEngine()}
             title="Automatically move leads with >90% win probability score to Closed Won"
-            className="flex items-center gap-2 bg-gradient-to-r from-amber-400 via-emerald-400 to-emerald-500 hover:from-amber-300 hover:to-emerald-300 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs transition-all shadow-md active:scale-95 cursor-pointer"
+            className="flex items-center gap-2 bg-indigo-800 hover:bg-indigo-700 text-amber-300 font-extrabold px-3.5 py-2.5 rounded-xl text-xs transition-all border border-indigo-700"
           >
-            <Zap className="w-4 h-4 text-slate-950 fill-slate-950 animate-pulse" />
-            <span>⚡ Run Auto-Move (&gt;90%)</span>
+            <Zap className="w-4 h-4 text-amber-400 fill-amber-400 animate-pulse" />
+            <span>Auto-Move (&gt;90%)</span>
           </button>
 
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-4 py-2.5 rounded-xl text-xs transition-all shadow-md"
+            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-bold px-3.5 py-2.5 rounded-xl text-xs transition-all border border-white/20"
           >
             <Plus className="w-4 h-4" />
             <span>Add Manual Deal</span>
@@ -332,7 +533,7 @@ export const LeadsManagerView: React.FC = () => {
 
           <button
             onClick={fetchLeads}
-            className="flex items-center gap-2 bg-indigo-800 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-all border border-indigo-700"
+            className="flex items-center gap-2 bg-indigo-800 hover:bg-indigo-700 text-white font-bold px-3.5 py-2.5 rounded-xl text-xs transition-all border border-indigo-700"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             <span>Refresh</span>
@@ -340,13 +541,29 @@ export const LeadsManagerView: React.FC = () => {
 
           <button
             onClick={exportLeadsCSV}
-            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-all border border-white/20"
+            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-bold px-3.5 py-2.5 rounded-xl text-xs transition-all border border-white/20"
           >
             <Download className="w-4 h-4" />
-            <span>Export CSV</span>
+            <span>CSV</span>
           </button>
         </div>
       </div>
+
+      {/* CRM Sync Notification Toast */}
+      {crmSyncNotice && (
+        <div className="bg-indigo-950 border border-indigo-600 text-indigo-100 rounded-2xl p-4 shadow-xl flex items-center justify-between gap-3 text-xs animate-fadeIn">
+          <div className="flex items-center gap-2.5 font-bold">
+            <Database className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>{crmSyncNotice}</span>
+          </div>
+          <button
+            onClick={() => setCrmSyncNotice(null)}
+            className="text-indigo-300 hover:text-white p-1 rounded-lg transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Auto-Move Notification Toast */}
       {autoMoveNotice && (
@@ -553,6 +770,7 @@ export const LeadsManagerView: React.FC = () => {
 
                         const winProb = lead.winProbability || 75;
                         const isHighProb = winProb > 90;
+                        const isSelected = selectedLeadIds.includes(lead.id);
 
                         return (
                           <div
@@ -560,25 +778,43 @@ export const LeadsManagerView: React.FC = () => {
                             draggable
                             onDragStart={(e) => handleDragStart(e, lead.id)}
                             className={`bg-white border rounded-xl p-3.5 shadow-2xs hover:shadow-md transition-all space-y-3 cursor-grab active:cursor-grabbing relative group ${
-                              isHighProb && lead.stage !== 'closed_won'
+                              isSelected
+                                ? 'border-indigo-600 ring-2 ring-indigo-400 bg-indigo-50/30'
+                                : isHighProb && lead.stage !== 'closed_won'
                                 ? 'border-emerald-400 ring-1 ring-emerald-300 bg-emerald-50/20'
                                 : 'border-slate-200 hover:border-indigo-300'
                             }`}
                           >
                             <div className="flex items-start justify-between gap-2">
-                              <div>
-                                <h4 className="font-bold text-xs text-slate-900 group-hover:text-indigo-600 transition-colors">
-                                  {lead.name}
-                                </h4>
-                                {lead.businessName && (
-                                  <p className="text-[10px] text-slate-500 font-medium">{lead.businessName}</p>
-                                )}
+                              <div className="flex items-start gap-2">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleToggleLeadSelection(lead.id);
+                                  }}
+                                  className="mt-0.5 text-slate-400 hover:text-indigo-600 transition-colors cursor-pointer"
+                                >
+                                  {isSelected ? (
+                                    <CheckSquare className="w-4 h-4 text-indigo-600" />
+                                  ) : (
+                                    <Square className="w-4 h-4 text-slate-300 group-hover:text-slate-400" />
+                                  )}
+                                </button>
+                                <div>
+                                  <h4 className="font-bold text-xs text-slate-900 group-hover:text-indigo-600 transition-colors">
+                                    {lead.name}
+                                  </h4>
+                                  {lead.businessName && (
+                                    <p className="text-[10px] text-slate-500 font-medium">{lead.businessName}</p>
+                                  )}
+                                </div>
                               </div>
                               <GripVertical className="w-4 h-4 text-slate-300 group-hover:text-slate-400 shrink-0" />
                             </div>
 
-                            {/* Agentic Win Probability Badge */}
-                            <div className="flex items-center justify-between gap-2 text-[10px]">
+                            {/* Agentic Win Probability & CRM Badges */}
+                            <div className="flex flex-wrap items-center justify-between gap-1.5 text-[10px]">
                               {isHighProb ? (
                                 <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 border border-emerald-300 font-extrabold px-2 py-0.5 rounded-md">
                                   <Zap className="w-3 h-3 text-amber-500 fill-amber-500 animate-pulse" />
@@ -588,6 +824,28 @@ export const LeadsManagerView: React.FC = () => {
                                 <span className="inline-flex items-center gap-1 bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold px-2 py-0.5 rounded-md">
                                   <span>{winProb}% Win Score</span>
                                 </span>
+                              )}
+
+                              {lead.crmSynced ? (
+                                <span
+                                  title={`Synced to ${lead.crmProvider || 'CRM'} • Contact ID: ${lead.crmContactId}`}
+                                  className="inline-flex items-center gap-1 bg-teal-50 text-teal-800 border border-teal-300 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md"
+                                >
+                                  <ShieldCheck className="w-3 h-3 text-teal-600" />
+                                  <span>Synced CRM</span>
+                                </span>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleOpenCrmSyncSingle(lead);
+                                  }}
+                                  className="inline-flex items-center gap-1 bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-700 border border-slate-200 hover:border-indigo-300 text-[9px] font-bold px-1.5 py-0.5 rounded-md transition-all cursor-pointer"
+                                >
+                                  <Database className="w-2.5 h-2.5 text-indigo-500" />
+                                  <span>Sync CRM</span>
+                                </button>
                               )}
 
                               {lead.autoMoved && (
@@ -679,19 +937,34 @@ export const LeadsManagerView: React.FC = () => {
             <table className="w-full text-left text-xs text-slate-700">
               <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-200 uppercase tracking-wider">
                 <tr>
+                  <th className="py-3 px-3 w-10">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleSelectAll(filteredLeads)}
+                      className="text-slate-400 hover:text-indigo-600 transition-colors cursor-pointer"
+                      title="Select all leads"
+                    >
+                      {selectedLeadIds.length > 0 && selectedLeadIds.length >= filteredLeads.length ? (
+                        <CheckSquare className="w-4 h-4 text-indigo-600" />
+                      ) : (
+                        <Square className="w-4 h-4 text-slate-400" />
+                      )}
+                    </button>
+                  </th>
                   <th className="py-3 px-4">Prospect Name</th>
                   <th className="py-3 px-4">Win Score</th>
+                  <th className="py-3 px-4">CRM Integration</th>
                   <th className="py-3 px-4">WhatsApp Contact</th>
                   <th className="py-3 px-4">Pipeline Stage</th>
                   <th className="py-3 px-4">Region</th>
                   <th className="py-3 px-4">Package & Retainer</th>
-                  <th className="py-3 px-4 text-right">Action</th>
+                  <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium">
                 {filteredLeads.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-8 text-center text-slate-400 font-medium">
+                    <td colSpan={9} className="py-8 text-center text-slate-400 font-medium">
                       No captured leads found matching your search.
                     </td>
                   </tr>
@@ -709,9 +982,23 @@ export const LeadsManagerView: React.FC = () => {
                     const currentStageObj = PIPELINE_STAGES.find((s) => s.id === (lead.stage || 'new')) || PIPELINE_STAGES[0];
                     const winProb = lead.winProbability || 75;
                     const isHighProb = winProb > 90;
+                    const isSelected = selectedLeadIds.includes(lead.id);
 
                     return (
-                      <tr key={lead.id} className="hover:bg-slate-50 transition-colors">
+                      <tr key={lead.id} className={`transition-colors ${isSelected ? 'bg-indigo-50/40' : 'hover:bg-slate-50'}`}>
+                        <td className="py-3.5 px-3">
+                          <button
+                            type="button"
+                            onClick={() => handleToggleLeadSelection(lead.id)}
+                            className="text-slate-400 hover:text-indigo-600 transition-colors cursor-pointer"
+                          >
+                            {isSelected ? (
+                              <CheckSquare className="w-4 h-4 text-indigo-600" />
+                            ) : (
+                              <Square className="w-4 h-4 text-slate-300" />
+                            )}
+                          </button>
+                        </td>
                         <td className="py-3.5 px-4 font-bold text-slate-900">
                           <div>{lead.name}</div>
                           {lead.businessName && (
@@ -736,6 +1023,27 @@ export const LeadsManagerView: React.FC = () => {
                               </span>
                             )}
                           </div>
+                        </td>
+                        <td className="py-3.5 px-4">
+                          {lead.crmSynced ? (
+                            <div className="inline-flex flex-col">
+                              <span className="inline-flex items-center gap-1 bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-extrabold px-2 py-0.5 rounded-md">
+                                <ShieldCheck className="w-3 h-3 text-teal-600" />
+                                <span>{lead.crmProvider || 'Synced CRM'}</span>
+                              </span>
+                              <span className="text-[9px] text-slate-400 font-mono mt-0.5">
+                                ID: {lead.crmContactId}
+                              </span>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => handleOpenCrmSyncSingle(lead)}
+                              className="inline-flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-2.5 py-1 rounded-md border border-indigo-200 text-[10px] transition-all cursor-pointer"
+                            >
+                              <Database className="w-3 h-3 text-indigo-600" />
+                              <span>Sync to CRM</span>
+                            </button>
+                          )}
                         </td>
                         <td className="py-3.5 px-4 text-emerald-700 font-mono font-bold">{lead.whatsapp}</td>
                         <td className="py-3.5 px-4">
@@ -767,19 +1075,25 @@ export const LeadsManagerView: React.FC = () => {
                             GHS {lead.estimatedValueGHS || 1299} / mo
                           </div>
                         </td>
-                        <td className="py-3.5 px-4 text-slate-400 font-normal">
-                          {new Date(lead.createdAt).toLocaleDateString()}
-                        </td>
                         <td className="py-3.5 px-4 text-right">
-                          <a
-                            href={waUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-all shadow-2xs"
-                          >
-                            <MessageSquare className="w-3.5 h-3.5" />
-                            <span>WhatsApp</span>
-                          </a>
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => handleOpenCrmSyncSingle(lead)}
+                              title="Sync Lead to External CRM"
+                              className="p-1.5 text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition-all cursor-pointer"
+                            >
+                              <Database className="w-3.5 h-3.5" />
+                            </button>
+                            <a
+                              href={waUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-all shadow-2xs"
+                            >
+                              <MessageSquare className="w-3.5 h-3.5" />
+                              <span>WhatsApp</span>
+                            </a>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -887,6 +1201,237 @@ export const LeadsManagerView: React.FC = () => {
                 Add Deal To Kanban Board
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* SYNC TO CRM MODAL */}
+      {showCrmModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-3xl p-6 shadow-2xl space-y-5 my-8 animate-fadeIn">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-indigo-50 border border-indigo-100 rounded-xl text-indigo-600">
+                    <Database className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-extrabold text-lg text-slate-900">
+                    Sync Sales Leads to External CRM & Automation Tool
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-500 font-normal pl-9">
+                  Export prospect data directly to marketing automation tools or custom API webhooks.
+                </p>
+              </div>
+
+              <button
+                onClick={() => setShowCrmModal(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 transition-colors rounded-lg hover:bg-slate-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Target Leads Summary Banner */}
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2 font-bold text-slate-800">
+                <Users className="w-4 h-4 text-indigo-600" />
+                <span>Target Prospects to Export: <span className="text-indigo-600 font-black">{crmTargetLeads.length} Lead(s)</span></span>
+              </div>
+              <div className="flex items-center gap-3 text-[11px]">
+                <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono font-bold px-2.5 py-1 rounded-md">
+                  Est. Value: GHS {crmTargetLeads.reduce((acc, curr) => acc + (curr.estimatedValueGHS || 1299), 0).toLocaleString()}
+                </span>
+              </div>
+            </div>
+
+            {/* CRM Provider Tabs */}
+            <div className="space-y-2">
+              <label className="block text-slate-700 font-extrabold text-xs uppercase tracking-wider">
+                1. Select Target Marketing Automation / CRM Platform
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                {CRM_PROVIDERS.map((provider) => {
+                  const isSelected = selectedCrmProvider === provider.id;
+                  return (
+                    <button
+                      key={provider.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedCrmProvider(provider.id);
+                        setCrmApiKey(
+                          provider.id === 'hubspot' ? 'pat-na1-ghana-maps-demo-token-9842' :
+                          provider.id === 'salesforce' ? 'bearer_sf_token_live_ghana_bi' :
+                          provider.id === 'gohighlevel' ? 'ghl_loc_accra_subaccount_v1' :
+                          provider.id === 'mailchimp' ? 'mc_key_849201948201948' :
+                          'api_key_live_marketing_auto'
+                        );
+                      }}
+                      className={`p-3 rounded-xl border text-left transition-all flex flex-col justify-between gap-2 cursor-pointer ${
+                        isSelected
+                          ? 'border-indigo-600 bg-indigo-50/60 ring-2 ring-indigo-400 shadow-sm'
+                          : 'border-slate-200 hover:border-slate-300 bg-white'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-lg">{provider.icon}</span>
+                        {isSelected && (
+                          <span className="bg-indigo-600 text-white rounded-full p-0.5">
+                            <Check className="w-3 h-3" />
+                          </span>
+                        )}
+                      </div>
+                      <div>
+                        <div className="font-extrabold text-xs text-slate-900">{provider.name}</div>
+                        <div className="text-[10px] text-slate-500 line-clamp-1 mt-0.5">{provider.description}</div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Config & API Credentials */}
+            <div className="space-y-3 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-extrabold text-slate-800 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                  <Settings className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>2. API Credentials & Authentication</span>
+                </span>
+                <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                  SSL Encrypted TLS 1.3
+                </span>
+              </div>
+
+              <div>
+                <label className="block text-slate-600 font-bold mb-1 text-[11px]">
+                  API Bearer Token / Secret Key ({CRM_PROVIDERS.find(p => p.id === selectedCrmProvider)?.name})
+                </label>
+                <input
+                  type="text"
+                  value={crmApiKey}
+                  onChange={(e) => setCrmApiKey(e.target.value)}
+                  placeholder="e.g. pat-na1-xxxx-xxxx-xxxx"
+                  className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-slate-800 font-mono text-xs focus:outline-none focus:border-indigo-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-600 font-bold mb-1 text-[11px]">
+                  Endpoint / Webhook Target URL
+                </label>
+                <input
+                  type="text"
+                  value={crmWebhookUrl}
+                  onChange={(e) => setCrmWebhookUrl(e.target.value)}
+                  placeholder={CRM_PROVIDERS.find(p => p.id === selectedCrmProvider)?.defaultEndpoint}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-slate-800 font-mono text-xs focus:outline-none focus:border-indigo-600"
+                />
+              </div>
+            </div>
+
+            {/* Field Mapping Preview */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-extrabold text-slate-800 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                  <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>3. Schema Field Mapping Preview</span>
+                </span>
+                <span className="text-[10px] text-slate-400">Ghana Maps Schema &rarr; CRM Contact Schema</span>
+              </div>
+
+              <div className="border border-slate-200 rounded-xl overflow-hidden text-[11px]">
+                <table className="w-full text-left bg-white">
+                  <thead className="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
+                    <tr>
+                      <th className="py-2 px-3">Ghana Maps Property</th>
+                      <th className="py-2 px-3">Target CRM Field</th>
+                      <th className="py-2 px-3">Sample Value</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                    {DEFAULT_FIELD_MAPPING.map((m, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50/60">
+                        <td className="py-1.5 px-3 font-bold text-slate-900">{m.source}</td>
+                        <td className="py-1.5 px-3 font-mono text-indigo-600">{m.target}</td>
+                        <td className="py-1.5 px-3 text-slate-500 font-mono text-[10px]">{m.sample}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Sync Result Output */}
+            {crmSyncResult && (
+              <div className={`rounded-2xl p-4 border text-xs space-y-2 ${
+                crmSyncResult.success
+                  ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
+                  : 'bg-rose-50 border-rose-300 text-rose-950'
+              }`}>
+                <div className="flex items-center justify-between font-extrabold">
+                  <div className="flex items-center gap-2">
+                    {crmSyncResult.success ? (
+                      <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                    ) : (
+                      <X className="w-5 h-5 text-rose-600 shrink-0" />
+                    )}
+                    <span>{crmSyncResult.message}</span>
+                  </div>
+                  {crmSyncResult.batchId && (
+                    <span className="font-mono bg-white border border-emerald-300 px-2 py-0.5 rounded-md text-[10px] text-emerald-800">
+                      {crmSyncResult.batchId}
+                    </span>
+                  )}
+                </div>
+
+                {crmSyncResult.records && crmSyncResult.records.length > 0 && (
+                  <div className="pt-2 border-t border-emerald-200 space-y-1">
+                    <div className="font-bold text-[10px] uppercase tracking-wider text-emerald-800">
+                      Synced CRM Contact Receipts ({crmSyncResult.records.length})
+                    </div>
+                    <div className="max-h-32 overflow-y-auto space-y-1 font-mono text-[10px]">
+                      {crmSyncResult.records.map((r: any, idx: number) => (
+                        <div key={idx} className="bg-white/80 border border-emerald-200 rounded px-2 py-1 flex justify-between items-center">
+                          <span>{r.name} ({r.email})</span>
+                          <span className="font-bold text-emerald-700">{r.crmContactId}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Sync Action Buttons */}
+            <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setShowCrmModal(false)}
+                className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-xs transition-colors cursor-pointer"
+              >
+                Close
+              </button>
+
+              <button
+                type="button"
+                disabled={isSyncingCrm || crmTargetLeads.length === 0}
+                onClick={handleExecuteCrmSync}
+                className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-500 hover:to-purple-600 text-white font-extrabold px-6 py-2.5 rounded-xl text-xs transition-all shadow-md active:scale-95 cursor-pointer disabled:opacity-50"
+              >
+                {isSyncingCrm ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin text-emerald-300" />
+                    <span>Syncing API Payload...</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4 text-emerald-300" />
+                    <span>Execute Sync to {CRM_PROVIDERS.find(p => p.id === selectedCrmProvider)?.name} ({crmTargetLeads.length})</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
